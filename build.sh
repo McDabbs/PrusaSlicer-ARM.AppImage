@@ -16,7 +16,7 @@ echo "Greetings from the PrusaSlicer ARM AppImage build assistant .."
 LATEST_RELEASE="https://api.github.com/repos/prusa3d/PrusaSlicer/releases/latest"
 
 # Dependencies fed to apt for installation
-DEPS_REQUIRED="git cmake libboost-dev libboost-regex-dev libboost-filesystem-dev libboost-thread-dev libboost-log-dev libboost-locale-dev libcurl4-openssl-dev libwxgtk3.0-dev build-essential pkg-config libtbb-dev zlib1g-dev libcereal-dev libeigen3-dev libnlopt-cxx-dev libudev-dev libopenvdb-dev libboost-iostreams-dev libnlopt-dev libdbus-1-dev"
+DEPS_REQUIRED="git cmake libboost-dev libboost-regex-dev libboost-filesystem-dev libboost-thread-dev libboost-log-dev libboost-locale-dev libcurl4-openssl-dev libwxgtk3.0-dev build-essential pkg-config libtbb-dev zlib1g-dev libcereal-dev libeigen3-dev libnlopt-cxx-dev libudev-dev libopenvdb-dev libboost-iostreams-dev libnlopt-dev libdbus-1-dev libgtk-3-dev"
 
 # URL to the latest libcgal-dev
 LIBCGAL_URL="http://raspbian.raspberrypi.org/raspbian/pool/main/c/cgal/libcgal-dev_5.0.3-1_armhf.deb"
@@ -114,31 +114,6 @@ else
   echo "Done installing package .."
 fi
 
-echo 
-echo '******************************************************************************************'
-echo '* PrusaSlicer build instructions recommend wxWidgets 3.1.                                *'
-echo '******************************************************************************************'
-
-read -p "May I download and install wxWidgets 3.1 [N/y] " -n 1 -r
-if ! [[ $REPLY =~ ^[Yy]$ ]]
-then
-  echo
-  echo "Ok. Exiting here."
-  exit 1
-else
-  echo
-  echo "Installing package .."
-  OLDPWD=${PWD}
-  WXFILE="${WXWIDGETS_RELEASE_URL##*/}"
-  curl -sSL "${WXWIDGETS_RELEASE_URL}" > "${PWD}/${WXFILE}"
-  tar -xvf "${PWD}/${WXFILE}"
-  cd "${WXFILE%$.tar.bz2}"
-  mkdir -p build_gtk
-  ../configure && make -j4 && sudo make install
-  ldconfig
-  cd ${OLDPWD}
-fi
-
 echo
 echo '**********************************************************************************'
 echo '* This utility needs your consent to install the following packages for building *'
@@ -171,6 +146,33 @@ fi
 echo
 echo "Dependencies installed. Proceeding with installation .."
 echo
+
+
+echo
+echo '******************************************************************************************'
+echo '* PrusaSlicer build instructions recommend wxWidgets 3.1.                                *'
+echo '******************************************************************************************'
+
+read -p "May I download and install wxWidgets 3.1 [N/y] " -n 1 -r
+if ! [[ $REPLY =~ ^[Yy]$ ]]
+then
+  echo
+  echo "Ok. Exiting here."
+  exit 1
+else
+  echo
+  echo "Installing package .."
+  OLDPWD=${PWD}
+  WXFILE="${WXWIDGETS_RELEASE_URL##*/}"
+  curl -sSL "${WXWIDGETS_RELEASE_URL}" > "${PWD}/${WXFILE}"
+  tar -xvf "${PWD}/${WXFILE}"
+  cd "${WXFILE%$*.tar.bz2}"
+  mkdir -p build_gtk
+  cd build_gtk || exit
+  ../configure && make -j4 && sudo make install
+  sudo ldconfig
+  cd ${OLDPWD}
+fi
 
 [[ -d "./pkg2appimage" ]] || git clone https://github.com/AppImage/pkg2appimage 
 OLD_CWD="$(pwd)"
