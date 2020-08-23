@@ -21,6 +21,8 @@ DEPS_REQUIRED="git cmake libboost-dev libboost-regex-dev libboost-filesystem-dev
 # URL to the latest libcgal-dev
 LIBCGAL_URL="http://raspbian.raspberrypi.org/raspbian/pool/main/c/cgal/libcgal-dev_5.0.3-1_armhf.deb"
 
+# URL to the latest wxWidgets for Linux (GitHub release)
+WXWIDGETS_RELEASE_URL="https://github.com/wxWidgets/wxWidgets/releases/download/v3.1.4/wxWidgets-3.1.4.tar.bz2"
 
 if ! hash jq curl >/dev/null; then
   echo
@@ -110,6 +112,31 @@ else
     
   fi
   echo "Done installing package .."
+fi
+
+echo 
+echo '******************************************************************************************'
+echo '* PrusaSlicer build instructions recommend wxWidgets 3.1.                                *'
+echo '******************************************************************************************'
+
+read -p "May I download and install wxWidgets 3.1 [N/y] " -n 1 -r
+if ! [[ $REPLY =~ ^[Yy]$ ]]
+then
+  echo
+  echo "Ok. Exiting here."
+  exit 1
+else
+  echo
+  echo "Installing package .."
+  OLDPWD=${PWD}
+  WXFILE="${WXWIDGETS_RELEASE_URL##*/}"
+  curl -sSL "${WXWIDGETS_RELEASE_URL}" > "${PWD}/${WXFILE}"
+  tar -xvf "${PWD}/${WXFILE}"
+  cd "${WXFILE%$.tar.bz2}"
+  mkdir -p build_gtk
+  ../configure && make -j4 && sudo make install
+  ldconfig
+  cd ${OLDPWD}
 fi
 
 echo
