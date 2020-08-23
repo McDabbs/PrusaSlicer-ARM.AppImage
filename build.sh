@@ -162,7 +162,7 @@ then
 else
   echo
   echo "Installing package .."
-  OLDPWD=${PWD}
+  OLD_CWD="$(pwd)"
   WXFILE="${WXWIDGETS_RELEASE_URL##*/}"
   curl -sSL "${WXWIDGETS_RELEASE_URL}" > "${PWD}/${WXFILE}"
   tar -xvf "${PWD}/${WXFILE}"
@@ -171,7 +171,7 @@ else
   cd build_gtk || exit
   ../configure && make -j4 && sudo make install
   sudo ldconfig
-  cd ${OLDPWD}
+  cd ${OLD_CWD}
 fi
 
 [[ -d "./pkg2appimage" ]] || git clone https://github.com/AppImage/pkg2appimage 
