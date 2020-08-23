@@ -9,7 +9,7 @@ fi
 
 echo "Building against upstream version: ${LATEST_VERSION}"
 
-[[ -d "./pkg2appimage" ]] || git clone https://github.com/AppImage/pkg2appimage
+#[[ -d "./pkg2appimage" ]] || git clone https://github.com/AppImage/pkg2appimage
 
 OLD_CWD="$(pwd)"
 cp ps.yml ./pkg2appimage
@@ -17,7 +17,7 @@ cp ps.yml ./pkg2appimage
 sed -i "s#VERSION_PLACEHOLDER#${LATEST_VERSION}#g" ./pkg2appimage/ps.yml
 
 cd pkg2appimage || exit
-[[ -d "./PrusaSlicer" ]] && rm -rf ./PrusaSlicer
+#[[ -d "./PrusaSlicer" ]] && rm -rf ./PrusaSlicer
 
 SYSTEM_ARCH="armhf" ./pkg2appimage ps.yml
 echo "Finished build process."
